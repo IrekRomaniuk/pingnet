@@ -120,13 +120,13 @@ func main() {
 		for _, ip := range result {
 			fmt.Println(ip)
 			}
-		fmt.Printf("%.2fs %d/%d %d\n", time.Since(start).Seconds(),len(result),len(hosts),concurrentMax)
+		fmt.Printf("%.2fs alive/total: %d/%d cur: %d\n", time.Since(start).Seconds(),len(result),len(hosts),concurrentMax)
 	} else if *PRINT  == "dead" {
 		dead := utils.Diff(hosts, result)
 		for _, ip := range dead {
 			fmt.Println(ip)
 			}
-		fmt.Printf("%.2fs %d/%d %d\n", time.Since(start).Seconds(),len(dead),len(hosts),concurrentMax)
+		fmt.Printf("%.2fs dead/total: %d/%d cur: %d\n", time.Since(start).Seconds(),len(dead),len(hosts),concurrentMax)
 	}
 	
 	fmt.Printf("pingcount,site=%s,cur=%d total-up=%d\n", *SITE, concurrentMax, len(result))
