@@ -126,7 +126,7 @@ func main() {
 		for _, ip := range dead {
 			fmt.Println(ip)
 			}
-		fmt.Printf("%.2fs %d/%d %d\n", time.Since(start).Seconds(),len(result),len(hosts),concurrentMax)
+		fmt.Printf("%.2fs %d/%d %d\n", time.Since(start).Seconds(),len(dead),len(hosts),concurrentMax)
 	}
 	
 	fmt.Printf("pingcount,site=%s,cur=%d total-up=%d\n", *SITE, concurrentMax, len(result))
