@@ -1,6 +1,6 @@
 package utils
 //tw string slice diff
-func difference(slice1 []string, slice2 []string) ([]string){
+func Difference(slice1 []string, slice2 []string) ([]string){
     diffStr := []string{}
     m :=map [string]int{}
 

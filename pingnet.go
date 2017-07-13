@@ -4,7 +4,6 @@ import (
 	"os/exec"
 	"fmt"
 	"time"
-	//"github.com/k0kubun/pp"
 	"flag"
 	"os"
 	"bufio"
@@ -18,7 +17,7 @@ var (
 	PINGCOUNT = flag.String("c", "1", "ping count)")
 	PINGTIMEOUT = flag.String("w", "1", "ping timout in s")
 	version = flag.Bool("v", false, "Prints current version")
-	PRINT = flag.Bool("p", true, "print metadata")
+	PRINT = flag.String("p", "alive", "print metadata")
 	SITE = flag.String("s", "DC1", "source location tag")
 )
 var (
@@ -116,14 +115,20 @@ func main() {
 	}
 	alives := <-doneChan
 	result := delete_empty(alives)
-	if *PRINT {
+	if *PRINT  == "alive" {
 		//fmt.Println(result)
 		for _, ip := range result {
 			fmt.Println(ip)
 			}
 		fmt.Printf("%.2fs %d/%d %d\n", time.Since(start).Seconds(),len(result),len(hosts),concurrentMax)
+	} else if *PRINT  == "dead" {
+		dead := utlis.Difference(hosts, result)
+		for _, ip := range dead {
+			fmt.Println(ip)
+			}
+		fmt.Printf("%.2fs %d/%d %d\n", time.Since(start).Seconds(),len(result),len(hosts),concurrentMax)
 	}
-	//pp.Println(len(result))
+	
 	fmt.Printf("pingcount,site=%s,cur=%d total-up=%d\n", *SITE, concurrentMax, len(result))
 
 }
