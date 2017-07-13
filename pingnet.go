@@ -8,7 +8,7 @@ import (
 	"os"
 	"bufio"
 	"strconv"
-	u "gihub.com/IrekRomaniuk/pingnet/utils"
+	"gihub.com/IrekRomaniuk/pingnet/utils"
 )
 
 var (
@@ -122,7 +122,7 @@ func main() {
 			}
 		fmt.Printf("%.2fs %d/%d %d\n", time.Since(start).Seconds(),len(result),len(hosts),concurrentMax)
 	} else if *PRINT  == "dead" {
-		dead := u.Difference(hosts, result)
+		dead := utils.Diff(hosts, result)
 		for _, ip := range dead {
 			fmt.Println(ip)
 			}
