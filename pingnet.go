@@ -8,7 +8,7 @@ import (
 	"os"
 	"bufio"
 	"strconv"
-	"gihub.com/IrekRomaniuk/pingnet/utils"
+	u "gihub.com/IrekRomaniuk/pingnet/utils"
 )
 
 var (
@@ -99,7 +99,7 @@ func main() {
 	pingChan := make(chan string, concurrentMax)
 	pongChan := make(chan string, len(hosts))
 	doneChan := make(chan []string)
-	if *PRINT {
+	if *PRINT == "alive" {
 		fmt.Printf("concurrentMax=%d hosts=%d -> %s...%s\n", concurrentMax, len(hosts), hosts[0], hosts[len(hosts) - 1])
 	}
 	start := time.Now()
@@ -122,7 +122,7 @@ func main() {
 			}
 		fmt.Printf("%.2fs %d/%d %d\n", time.Since(start).Seconds(),len(result),len(hosts),concurrentMax)
 	} else if *PRINT  == "dead" {
-		dead := utlis.Diff(hosts, result)
+		dead := u.Difference(hosts, result)
 		for _, ip := range dead {
 			fmt.Println(ip)
 			}
