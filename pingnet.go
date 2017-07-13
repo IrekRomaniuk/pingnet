@@ -8,7 +8,7 @@ import (
 	"os"
 	"bufio"
 	"strconv"
-	"gihub.com/IrekRomaniuk/pingnet/utils"
+	"github.com/IrekRomaniuk/pingnet/utils"
 )
 
 var (
