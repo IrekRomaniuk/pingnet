@@ -122,7 +122,7 @@ func main() {
 			}
 		fmt.Printf("%.2fs %d/%d %d\n", time.Since(start).Seconds(),len(result),len(hosts),concurrentMax)
 	} else if *PRINT  == "dead" {
-		dead := utlis.Difference(hosts, result)
+		dead := utlis.Diff(hosts, result)
 		for _, ip := range dead {
 			fmt.Println(ip)
 			}
