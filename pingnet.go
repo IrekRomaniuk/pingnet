@@ -27,7 +27,7 @@ var (
 
 func init() {
 	flag.Usage = func() {
-		fmt.Printf("Copyright 2016 @IrekRomaniuk. All rights reserved.\n")
+		fmt.Printf("Copyright 2017 @IrekRomaniuk. All rights reserved.\n")
 		fmt.Printf("Usage of %s:\n", os.Args[0])
 		flag.PrintDefaults()
 	}
