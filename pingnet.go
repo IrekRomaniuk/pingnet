@@ -9,6 +9,7 @@ import (
 	"os"
 	"bufio"
 	"strconv"
+	"gihub.com/IrekRomaniuk/pingnet/utils"
 )
 
 var (
