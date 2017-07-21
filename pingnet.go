@@ -1,12 +1,12 @@
 package main
-//Based on https://gist.github.com/kotakanbe/d3059af990252ba89a82
-import (
-	"os/exec"
+
+import (	
 	"fmt"
 	"time"
 	"flag"
 	"os"	
 	"github.com/IrekRomaniuk/pingnet/utils"
+	"github.com/IrekRomaniuk/pingnet/pings"
 )
 
 var (
@@ -35,32 +35,8 @@ func init() {
 		os.Exit(0)
 	}
 }
-func ping(pingChan <-chan string, pongChan chan <- string) {
-	for ip := range pingChan {
-		_, err := exec.Command("ping", "-c", *PINGCOUNT, "-W", *PINGTIMEOUT, ip).Output()  //Linux (timenout in s)
-		//_, err := exec.Command("ping", "-n", *PINGCOUNT, "-w", *PINGTIMEOUT, ip).Output()  //Windows (timenout in ms)
-		if err == nil {
-			pongChan <- ip
-		} else {
-			pongChan <- ""
-		}
-	}
-}
-
-func receivePong(pongNum int, pongChan <-chan string, doneChan chan <- []string) {
-	var alives []string
-	for i := 0; i < pongNum; i++ {
-		ip := <-pongChan
-		//fmt.Println("received: ", ip)
-		alives = append(alives, ip)
-	}
-	doneChan <- alives
-}
-
-
 
 func main() {
-	//var hosts []string
 
 	hosts, err := utils.Hosts(*HOSTS)
 
@@ -68,9 +44,11 @@ func main() {
 		fmt.Println(hosts)
 		os.Exit(0)
 	}
-
+	if *PRINT == "alive" {
+		fmt.Printf("concurrentMax=%d hosts=%d -> %s...%s\n", *CONCURRENTMAX, len(hosts), hosts[0], hosts[len(hosts) - 1])
+	}
 	start := time.Now()
-	result := utils.Deletempty(Ping(*CONCURRENTMAX, hosts))
+	result := utils.Deletempty(pings.Ping(*CONCURRENTMAX, *PINGCOUNT, *PINGTIMEOUT, hosts))
 	
 	if *PRINT  == "alive" {
 		//fmt.Println(result)
@@ -89,27 +67,4 @@ func main() {
 	fmt.Printf("pingcount,site=%s,cur=%d total-up=%d\n", *SITE, *CONCURRENTMAX, len(result))
 
 }
-//Ping pings slice of targets with given concurrency and retunrs alives 
-func Ping(conc int, hosts []string) []string {
-	concurrentMax := conc
-	pingChan := make(chan string, concurrentMax)
-	pongChan := make(chan string, len(hosts))
-	doneChan := make(chan []string)
-	if *PRINT == "alive" {
-		fmt.Printf("concurrentMax=%d hosts=%d -> %s...%s\n", concurrentMax, len(hosts), hosts[0], hosts[len(hosts) - 1])
-	}
-	//start := time.Now()
-	for i := 0; i < concurrentMax; i++ {
-		go ping(pingChan, pongChan)
-	}
 
-	go receivePong(len(hosts), pongChan, doneChan)
-
-	for _, ip := range hosts {
-		pingChan <- ip
-		//fmt.Println("sent: ", ip)
-	}
-
-	alives := <-doneChan
-	return alives
-}
