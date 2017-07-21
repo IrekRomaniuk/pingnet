@@ -5,6 +5,7 @@ import (
 	"time"
 	"flag"
 	"os"	
+	"strings"
 	"github.com/IrekRomaniuk/pingnet/utils"
 	"github.com/IrekRomaniuk/pingnet/pings"
 )
@@ -15,7 +16,7 @@ var (
 	PINGCOUNT = flag.String("c", "1", "ping count)")
 	PINGTIMEOUT = flag.String("w", "1", "ping timout in s")
 	version = flag.Bool("v", false, "Prints current version")
-	PRINT = flag.String("p", "alive", "print metadata for 'alive' or dead 'targets'")
+	PRINT = flag.String("p", "", "print or not metadata for 'alive' or dead 'targets'")
 	SITE = flag.String("s", "DC1", "source location tag")
 )
 var (
@@ -44,27 +45,28 @@ func main() {
 		fmt.Println(hosts)
 		os.Exit(0)
 	}
-	if *PRINT == "alive" {
+	if *PRINT != "" {
 		fmt.Printf("concurrentMax=%d hosts=%d -> %s...%s\n", *CONCURRENTMAX, len(hosts), hosts[0], hosts[len(hosts) - 1])
 	}
 	start := time.Now()
 	result := utils.Deletempty(pings.Ping(*CONCURRENTMAX, *PINGCOUNT, *PINGTIMEOUT, hosts))
 	
-	if *PRINT  == "alive" {
-		//fmt.Println(result)
+	if strings.Contains(*PRINT, "alive") {
 		for _, ip := range result {
 			fmt.Println(ip)
 			}
 		fmt.Printf("%.2fs alive/total: %d/%d cur: %d\n", time.Since(start).Seconds(),len(result),len(hosts),*CONCURRENTMAX)
-	} else if *PRINT  == "dead" {
+	} else if strings.Contains(*PRINT, "dead") {
 		dead := utils.Diff(hosts, result)
 		for _, ip := range dead {
 			fmt.Println(ip)
 			}
 		fmt.Printf("%.2fs dead/total: %d/%d cur: %d\n", time.Since(start).Seconds(),len(dead),len(hosts),*CONCURRENTMAX)
 	}
-	
+	//Telegraf compliant output be default
 	fmt.Printf("pingcount,site=%s,cur=%d total-up=%d\n", *SITE, *CONCURRENTMAX, len(result))
-
+	if strings.Contains(*PRINT, "firebase") {
+		fmt.Printf("firebase output to be implement")
+	}
 }
 
