@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"time"
 	"flag"
-	"os"
-	"bufio"
-	"strconv"
+	"os"	
 	"github.com/IrekRomaniuk/pingnet/utils"
 )
 
@@ -59,41 +57,19 @@ func receivePong(pongNum int, pongChan <-chan string, doneChan chan <- []string)
 	doneChan <- alives
 }
 
-func list1s(limit2 int) []string {
-	//Shield_Slice int
-	res := make([]string, 256 * 64) //256*64
-	for x := 192; x < limit2; x++ {
-		//192-256
-		for y := 0; y < 256; y++ {
-			//0-256
-			res = append(res, fmt.Sprintf("10.%d.%d.1", x, y))
-			//fmt.Printf("10.%d.%d.1", x, y)
-		}
-	}
-	return res //[:Shield_Slice]
-}
+
 
 func main() {
-	var hosts []string
-	if *HOSTS == "all" {
-		hosts = delete_empty(list1s(208))
-		//fmt.Println(hosts, len(hosts))
-	} else if num, err := strconv.Atoi(*HOSTS); err == nil {
-		if (192 < num) && (num <= 208) {
-			hosts = delete_empty(list1s(num))
-		} else {
-			hosts = delete_empty(list1s(208))
-		}
-	} else if pathExists(*HOSTS) {
-		lines, err := readHosts(*HOSTS)
-		hosts = delete_empty(lines)
-		if err != nil {
-			fmt.Println("Error reading file", *HOSTS)
-		}
-	} else {
-		fmt.Println(*HOSTS)
+	//var hosts []string
+
+	hosts, err := utils.Hosts(*HOSTS)
+
+	if err != nil {
+		fmt.Println(hosts)
 		os.Exit(0)
 	}
+
+	
 
 	concurrentMax := *CONCURRENTMAX
 	pingChan := make(chan string, concurrentMax)
@@ -114,7 +90,7 @@ func main() {
 		//fmt.Println("sent: ", ip)
 	}
 	alives := <-doneChan
-	result := delete_empty(alives)
+	result := utils.Delete_empty(alives)
 	if *PRINT  == "alive" {
 		//fmt.Println(result)
 		for _, ip := range result {
@@ -133,34 +109,4 @@ func main() {
 
 }
 
-func delete_empty(s []string) []string {
-	var r []string
-	for _, str := range s {
-		if str != "" {
-			r = append(r, str)
-		}
-	}
-	return r
-}
 
-func readHosts(path string) ([]string, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	var lines []string
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-	return lines, scanner.Err()
-}
-
-func pathExists(path string) (bool) {
-	_, err := os.Stat(path)
-	if err == nil { return true }
-	if os.IsNotExist(err) { return false }
-	return true
-}
