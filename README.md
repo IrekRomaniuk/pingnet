@@ -38,3 +38,9 @@ docker@ubuntu-DC1:~$ pingnet -a="pinglist.txt" -p="dead"
 pingcount,site=DC1,cur=200 total-up=1140
 ```
 
+### Firebase output format
+i.e.
+{
+      Description: "DC1 shield count",
+      total: 1000
+}
