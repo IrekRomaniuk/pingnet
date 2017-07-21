@@ -6,7 +6,7 @@ import (
     "errors"
     "strconv"
 )
-//two string slice diff
+//Diff produces difference between two string slices
 func Diff(slice1 []string, slice2 []string) ([]string){
     diffStr := []string{}
     m :=map [string]int{}
@@ -28,24 +28,24 @@ func Diff(slice1 []string, slice2 []string) ([]string){
 }
 
 //Hosts creates output slice of targets based on the HOSTS flag
-func Hosts(flag_hosts string) ([]string, error) {        
-    if flag_hosts == "all" {
-		return Delete_empty(list1s(208)), nil
+func Hosts(flaghosts string) ([]string, error) {        
+    if flaghosts == "all" {
+		return Deletempty(list1s(208)), nil
 		//fmt.Println(hosts, len(hosts))
-	} else if num, err := strconv.Atoi(flag_hosts); err == nil {
+	} else if num, err := strconv.Atoi(flaghosts); err == nil {
 		if (192 < num) && (num <= 208) {
-			return Delete_empty(list1s(num)), nil
+			return Deletempty(list1s(num)), nil
 		} else {
-			return Delete_empty(list1s(208)), nil
+			return Deletempty(list1s(208)), nil
 		}
-	} else if pathExists(flag_hosts) {
-		lines, err := readHosts(flag_hosts)
+	} else if pathExists(flaghosts) {
+		lines, err := readHosts(flaghosts)
 		
 		if err != nil {
             //fmt.Println("Error reading file", flag_hosts)
             return  []string{}, errors.New("Error reading file")
 		} else {
-			return Delete_empty(lines), nil
+			return Deletempty(lines), nil
 		}
 	} else {
         return []string{}, errors.New("Flag not recognized")		
@@ -65,8 +65,8 @@ func list1s(limit2 int) []string {
 	}
 	return res //[:Shield_Slice]
 }
-//Delete_empty deletes empty slice members
-func Delete_empty(s []string) []string {
+//Deletempty deletes empty slice members
+func Deletempty(s []string) []string {
 	var r []string
 	for _, str := range s {
 		if str != "" {
@@ -77,10 +77,10 @@ func Delete_empty(s []string) []string {
 }
 func readHosts(path string) ([]string, error) {
 	file, err := os.Open(path)
+	defer file.Close()
 	if err != nil {
 		return nil, err
 	}
-	defer file.Close()
 
 	var lines []string
 	scanner := bufio.NewScanner(file)

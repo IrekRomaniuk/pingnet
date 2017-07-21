@@ -69,16 +69,36 @@ func main() {
 		os.Exit(0)
 	}
 
+	start := time.Now()
+	result := utils.Deletempty(Ping(*CONCURRENTMAX, hosts))
 	
+	if *PRINT  == "alive" {
+		//fmt.Println(result)
+		for _, ip := range result {
+			fmt.Println(ip)
+			}
+		fmt.Printf("%.2fs alive/total: %d/%d cur: %d\n", time.Since(start).Seconds(),len(result),len(hosts),*CONCURRENTMAX)
+	} else if *PRINT  == "dead" {
+		dead := utils.Diff(hosts, result)
+		for _, ip := range dead {
+			fmt.Println(ip)
+			}
+		fmt.Printf("%.2fs dead/total: %d/%d cur: %d\n", time.Since(start).Seconds(),len(dead),len(hosts),*CONCURRENTMAX)
+	}
+	
+	fmt.Printf("pingcount,site=%s,cur=%d total-up=%d\n", *SITE, *CONCURRENTMAX, len(result))
 
-	concurrentMax := *CONCURRENTMAX
+}
+//Ping pings slice of targets with given concurrency and retunrs alives 
+func Ping(conc int, hosts []string) []string {
+	concurrentMax := conc
 	pingChan := make(chan string, concurrentMax)
 	pongChan := make(chan string, len(hosts))
 	doneChan := make(chan []string)
 	if *PRINT == "alive" {
 		fmt.Printf("concurrentMax=%d hosts=%d -> %s...%s\n", concurrentMax, len(hosts), hosts[0], hosts[len(hosts) - 1])
 	}
-	start := time.Now()
+	//start := time.Now()
 	for i := 0; i < concurrentMax; i++ {
 		go ping(pingChan, pongChan)
 	}
@@ -89,24 +109,7 @@ func main() {
 		pingChan <- ip
 		//fmt.Println("sent: ", ip)
 	}
+
 	alives := <-doneChan
-	result := utils.Delete_empty(alives)
-	if *PRINT  == "alive" {
-		//fmt.Println(result)
-		for _, ip := range result {
-			fmt.Println(ip)
-			}
-		fmt.Printf("%.2fs alive/total: %d/%d cur: %d\n", time.Since(start).Seconds(),len(result),len(hosts),concurrentMax)
-	} else if *PRINT  == "dead" {
-		dead := utils.Diff(hosts, result)
-		for _, ip := range dead {
-			fmt.Println(ip)
-			}
-		fmt.Printf("%.2fs dead/total: %d/%d cur: %d\n", time.Since(start).Seconds(),len(dead),len(hosts),concurrentMax)
-	}
-	
-	fmt.Printf("pingcount,site=%s,cur=%d total-up=%d\n", *SITE, concurrentMax, len(result))
-
+	return alives
 }
-
-
