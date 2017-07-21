@@ -4,7 +4,8 @@ import (
     "bufio"
     "fmt"
     "errors"
-    "strconv"
+	"strconv"
+	//import "gopkg.in/zabawaba99/firego.v1"
 )
 //Diff produces difference between two string slices
 func Diff(slice1 []string, slice2 []string) ([]string){
