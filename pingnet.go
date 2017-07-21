@@ -66,7 +66,7 @@ func main() {
 	//Telegraf compliant output be default
 	fmt.Printf("pingcount,site=%s,cur=%d total-up=%d\n", *SITE, *CONCURRENTMAX, len(result))
 	if strings.Contains(*PRINT, "firebase") {
-		fmt.Printf("firebase output to be implement")
+		fmt.Printf("firebase output to be implemented\n")
 	}
 }
 
